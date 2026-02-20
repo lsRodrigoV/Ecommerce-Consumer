@@ -1,25 +1,36 @@
 package com.rodrigo.kafka.kafka_demo.service;
 
-
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Component
 public class PedidoConsumer {
 
     @KafkaListener(
             topics = "pedido-topic",
-            groupId = "pedido-group"
+            containerFactory = "kafkaListenerContainerFactory"
     )
-    public void consumir(ConsumerRecord<String, String> record) {
+    public void consumir(ConsumerRecord<String, String> record,
+                         Acknowledgment ack) {
 
-        String key = record.key();
-        String value = record.value();
+        log.info("Mensagem recebida");
+        log.info("Partition: {}", record.partition());
+        log.info("Offset: {}", record.offset());
+        log.info("Key: {}", record.key());
+        log.info("Value: {}", record.value());
 
-        System.out.println("Mensagem recebida:");
-        System.out.println("Key: " + key);
-        System.out.println("Value: " + value);
+        // Simula processamento
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
+        // Confirma processamento
+        ack.acknowledge();
     }
 }
