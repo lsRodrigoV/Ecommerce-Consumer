@@ -1,0 +1,10 @@
+{
+  "type": "record",
+  "name": "Message",
+  "namespace": "com.rodrigo.kafka.kafka_consumer.schema",
+  "fields": [
+    { "name": "id", "type": "string" },
+    { "name": "timestamp", "type": "long" },
+    { "name": "message", "type": "string" }
+  ]
+}

@@ -1,10 +1,11 @@
 package com.rodrigo.kafka.kafka_demo.service;
 
+import lombok.extern.slf4j.Slf4j;
+import org.apache.avro.generic.GenericRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
@@ -14,23 +15,32 @@ public class PedidoConsumer {
             topics = "pedido-topic",
             containerFactory = "kafkaListenerContainerFactory"
     )
-    public void consumir(ConsumerRecord<String, String> record,
+    public void consumir(ConsumerRecord<String, GenericRecord> record,
                          Acknowledgment ack) {
 
-        log.info("Mensagem recebida");
+        GenericRecord message = record.value();
+
+        log.info("========= MENSAGEM RECEBIDA =========");
         log.info("Partition: {}", record.partition());
         log.info("Offset: {}", record.offset());
         log.info("Key: {}", record.key());
-        log.info("Value: {}", record.value());
 
-        // Simula processamento
+        if (message != null) {
+            log.info("ID: {}", message.get("id"));
+            log.info("Timestamp: {}", message.get("timestamp"));
+            log.info("Descrição: {}", message.get("message"));
+        }
+
         try {
-            Thread.sleep(2000);
+            Thread.sleep(500); // Simula processamento
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
 
-        // Confirma processamento
+        // Confirma manualmente o offset
         ack.acknowledge();
+
+        log.info("Offset confirmado com sucesso!");
+        log.info("======================================");
     }
 }

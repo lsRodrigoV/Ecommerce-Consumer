@@ -1,5 +1,5 @@
 server:
-  port: 8082
+  port: 8086
 
 spring:
   kafka:
@@ -8,10 +8,14 @@ spring:
     consumer:
       group-id: pedido-group
       auto-offset-reset: earliest
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       enable-auto-commit: false
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
 
     listener:
       ack-mode: manual
       concurrency: 2
+
+    properties:
+      schema.registry.url: http://localhost:8081
+      specific.avro.reader: true
