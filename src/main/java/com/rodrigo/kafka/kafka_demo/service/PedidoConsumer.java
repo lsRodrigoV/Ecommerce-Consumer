@@ -1,5 +1,6 @@
 package com.rodrigo.kafka.kafka_demo.service;
 
+import com.ecommerce.contracts.Message;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -15,7 +16,7 @@ public class PedidoConsumer {
             topics = "pedido-topic",
             containerFactory = "kafkaListenerContainerFactory"
     )
-    public void consumir(ConsumerRecord<String, GenericRecord> record,
+    public void consumir(ConsumerRecord<String, Message> record,
                          Acknowledgment ack) {
 
         GenericRecord message = record.value();
@@ -28,7 +29,7 @@ public class PedidoConsumer {
         if (message != null) {
             log.info("ID: {}", message.get("id"));
             log.info("Timestamp: {}", message.get("timestamp"));
-            log.info("Descrição: {}", message.get("message"));
+            log.info("Descrição: {}", message.get("descricao"));
         }
 
         try {
