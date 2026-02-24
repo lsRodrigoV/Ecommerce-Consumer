@@ -21,36 +21,46 @@ public class PedidoConsumer {
 
     private final DlqProducer dlqProducer;
 
-    private int contador = 0;
+    private static final int MAX_RETRIES = 3;
 
     @KafkaListener(topics = "pedido-topic", groupId = "pedido-group")
-    public void consumir(
-            ConsumerRecord<String, Message> record,
-            Acknowledgment ack) {
+    public void consumir(ConsumerRecord<String, Message> record, Acknowledgment ack) {
 
-        contador++;
+        int tentativas = 0;
+        boolean processado = false;
 
-        try {
-            log.info("Recebendo mensagem: {}", record.value());
+        while (!processado && tentativas < MAX_RETRIES) {
+            tentativas++;
 
-            // 💥 Simula erro a cada segunda mensagem
-            if (contador % 2 == 0) {
-                throw new RuntimeException("Erro simulado");
+            try {
+                log.info("infoMessage: Recebendo mensagem: {} | Tentativa: {}", record.value(), tentativas);
+
+                if (record.value().getDescricao().toString().contains("erro")) {
+                    throw new RuntimeException("Erro simulado");
+                }
+
+                log.info("infoMessage: Mensagem processada com sucesso: {}", record.value());
+
+                ack.acknowledge();
+                processado = true;
+
+            } catch (Exception e) {
+                log.error("errorMessage: Erro ao processar mensagem: {} | Tentativa: {} | Payload: {}",
+                        e.getMessage(), tentativas, record.value());
+
+                if (tentativas >= MAX_RETRIES) {
+                    dlqProducer.enviarParaDlq(record.value());
+                    log.error("errorMessage: Mensagem enviada para DLQ após {} tentativas: {}", tentativas, record.value());
+                    ack.acknowledge();
+                } else {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ie) {
+                        Thread.currentThread().interrupt();
+                        log.error("errorMessage: Thread interrompida durante retry");
+                    }
+                }
             }
-
-            // Processamento normal
-            log.info("Processado com sucesso!");
-
-            ack.acknowledge();
-
-        } catch (Exception e) {
-            log.error("Erro ao processar mensagem: {}", e.getMessage());
-
-            // Envia para DLQ
-            dlqProducer.enviarParaDlq(record.value());
-
-            // Confirma offset para não travar fila
-            ack.acknowledge();
         }
     }
 }
