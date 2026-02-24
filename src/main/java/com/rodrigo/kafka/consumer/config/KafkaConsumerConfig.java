@@ -1,14 +1,14 @@
-package com.rodrigo.kafka.kafka_demo.config;
+package com.rodrigo.kafka.consumer.config;
 
+import com.ecommerce.contracts.Message;
 import io.confluent.kafka.serializers.KafkaAvroDeserializer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.apache.kafka.common.record.TimestampType;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
-import org.apache.avro.generic.GenericRecord;
+import org.springframework.kafka.listener.ContainerProperties;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,7 +17,7 @@ import java.util.Map;
 public class KafkaConsumerConfig {
 
     @Bean
-    public DefaultKafkaConsumerFactory<String, GenericRecord> consumerFactory() {
+    public DefaultKafkaConsumerFactory<String, Message> consumerFactory() {
 
         Map<String, Object> props = new HashMap<>();
 
@@ -25,25 +25,28 @@ public class KafkaConsumerConfig {
         props.put(ConsumerConfig.GROUP_ID_CONFIG, "pedido-group");
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, KafkaAvroDeserializer.class);
+
+        // Schema Registry
         props.put("schema.registry.url", "http://localhost:8081");
-        props.put("specific.avro.reader", false); // <- importante para GenericRecord
+
+        // 🔥 ESSENCIAL para usar classe gerada
+        props.put("specific.avro.reader", true);
 
         return new DefaultKafkaConsumerFactory<>(props);
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, GenericRecord>
+    public ConcurrentKafkaListenerContainerFactory<String, Message>
     kafkaListenerContainerFactory() {
 
-        ConcurrentKafkaListenerContainerFactory<String, GenericRecord> factory =
+        ConcurrentKafkaListenerContainerFactory<String, Message> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
 
         factory.setConsumerFactory(consumerFactory());
 
-        // 👇 ACK manual
-        factory.getContainerProperties().setAckMode(
-                org.springframework.kafka.listener.ContainerProperties.AckMode.MANUAL
-        );
+        // ACK manual
+        factory.getContainerProperties()
+                .setAckMode(ContainerProperties.AckMode.MANUAL);
 
         return factory;
     }

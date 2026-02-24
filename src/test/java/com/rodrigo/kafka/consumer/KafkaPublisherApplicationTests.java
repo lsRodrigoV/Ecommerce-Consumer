@@ -1,4 +1,4 @@
-package com.rodrigo.kafka.kafka_demo;
+package com.rodrigo.kafka.consumer;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
