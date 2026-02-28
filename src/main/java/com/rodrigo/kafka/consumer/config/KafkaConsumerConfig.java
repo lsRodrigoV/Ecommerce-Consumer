@@ -26,10 +26,8 @@ public class KafkaConsumerConfig {
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, KafkaAvroDeserializer.class);
 
-        // Schema Registry
         props.put("schema.registry.url", "http://localhost:8081");
 
-        // 🔥 ESSENCIAL para usar classe gerada
         props.put("specific.avro.reader", true);
 
         return new DefaultKafkaConsumerFactory<>(props);
@@ -44,7 +42,6 @@ public class KafkaConsumerConfig {
 
         factory.setConsumerFactory(consumerFactory());
 
-        // ACK manual
         factory.getContainerProperties()
                 .setAckMode(ContainerProperties.AckMode.MANUAL);
 

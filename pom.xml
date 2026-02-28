@@ -25,7 +25,6 @@
         <avro.version>1.11.3</avro.version>
     </properties>
 
-    <!-- 🔥 Repositório da Confluent -->
     <repositories>
         <repository>
             <id>confluent</id>
@@ -35,36 +34,52 @@
 
     <dependencies>
 
-
+        <!-- Resilience4j -->
         <dependency>
-            <groupId>com.ecommerce.contracts</groupId>
-            <artifactId>ecommerce-contracts</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <groupId>io.github.resilience4j</groupId>
+            <artifactId>resilience4j-spring-boot3</artifactId>
+            <version>2.2.0</version>
         </dependency>
 
-
-        <!-- Kafka -->
+        <!-- Kafka e Avro -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-kafka</artifactId>
         </dependency>
-
-        <!-- Web -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-webmvc</artifactId>
-        </dependency>
-
         <dependency>
             <groupId>org.apache.avro</groupId>
             <artifactId>avro</artifactId>
             <version>1.11.3</version>
         </dependency>
-
         <dependency>
             <groupId>io.confluent</groupId>
             <artifactId>kafka-avro-serializer</artifactId>
             <version>7.6.0</version>
+        </dependency>
+
+        <!-- Web -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- JPA e H2 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- Lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
         </dependency>
 
         <!-- DevTools -->
@@ -75,11 +90,11 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- Lombok -->
+        <!-- Contracts -->
         <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <optional>true</optional>
+            <groupId>com.ecommerce.contracts</groupId>
+            <artifactId>ecommerce-contracts</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
 
         <!-- Test -->
@@ -108,7 +123,6 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
-
         </plugins>
     </build>
 
